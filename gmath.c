@@ -67,11 +67,14 @@ color calculate_specular(double light[2][3], double *sreflect, double *view, dou
   double c;
   normalize(light[LOCATION]);
   normalize(normal);
+  normalize(reflect);
   c = 2 * dot_product(normal,light[LOCATION]);
+  if (c < 0)
+    c = 0;
   for(int i = 0; i < 3; i++)
     reflect[i] = normal[i] * c - light[LOCATION][i];
   c = dot_product(reflect,view);
-  if(c < 0)
+  if (c < 0)
     c = 0;
   c = pow(c,SPECULAR_EXP);
   s.red = light[COLOR][RED] * sreflect[0] * c;
