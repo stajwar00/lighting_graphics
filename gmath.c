@@ -41,41 +41,42 @@ color get_lighting( double *normal, double *view, color alight, double light[2][
 
 color calculate_ambient(color alight, double *areflect ) {
   color a;
-  a.red = alight.red * areflect[RED];
-  a.green = alight.green * areflect[GREEN];
-  a.blue = alight.blue * areflect[BLUE];
+  a.red = alight.red * areflect[0];
+  a.green = alight.green * areflect[1];
+  a.blue = alight.blue * areflect[2];
   return a;
 }
 
 color calculate_diffuse(double light[2][3], double *dreflect, double *normal ) {
   color d;
   double c;
-  c = dot_product(normal, light[LOCATION]);
-  if (c < 0){
+  normalize(light[LOCATION]);
+  normalize(normal);
+  c = dot_product(normal,light[LOCATION]);
+  if(c < 0)
     c = 0;
-  }
-  d.red = light[COLOR][RED] * dreflect[RED] * c;
-  d.green = light[COLOR][GREEN] * dreflect[GREEN] * c;
-  d.blue = light[COLOR][BLUE] * dreflect[BLUE] * c;
-
+  d.red = light[COLOR][RED] * dreflect[0] * c;
+  d.green = light[COLOR][GREEN] * dreflect[1] * c;
+  d.blue = light[COLOR][BLUE] * dreflect[2] * c;
   return d;
 }
 
 color calculate_specular(double light[2][3], double *sreflect, double *view, double *normal ) {
   color s;
-  double c; 
   double reflect[3];
-  c = 2 * dot_product(normal, light[LOCATION]);
-  for (int i = 0; i < 3; i++){
+  double c;
+  normalize(light[LOCATION]);
+  normalize(normal);
+  c = 2 * dot_product(normal,light[LOCATION]);
+  for(int i = 0; i < 3; i++)
     reflect[i] = normal[i] * c - light[LOCATION][i];
-  }
-  if (c < 0){
+  c = dot_product(reflect,view);
+  if(c < 0)
     c = 0;
-  }
-  c = pow(c, SPECULAR_EXP);
-  s.red = light[COLOR][RED] * sreflect[RED] * c;
-  s.green = light[COLOR][GREEN] * sreflect[GREEN] * c;
-  s.blue = light[COLOR][BLUE] * sreflect[BLUE] * c;
+  c = pow(c,SPECULAR_EXP);
+  s.red = light[COLOR][RED] * sreflect[0] * c;
+  s.green = light[COLOR][GREEN] * sreflect[1] * c;
+  s.blue = light[COLOR][BLUE] * sreflect[2] * c;
   return s;
 }
 
